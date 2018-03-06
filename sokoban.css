@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+}
+
+#message {
+    text-align: center;
+    height: 40px;
+}
+
+#container {
+    display: flex;
+    flex-flow: row wrap;
+    width: 340px;
+    margin:0 auto;
+    text-align: center;
+    position: relative;
+}
+
+.player {
+    background-image: url("girl.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    /* border: 1px solid black; */
+}
+
+.floor {
+    background-color: white;
+}
+
+.wall {
+    background-color: olive;
+}
+
+.storage {
+    /* width:15px;
+    height:15px; */
+    border-radius:15px;
+    background-color: pink;
+    display: block;
+}
+
+.box {
+    background-color: darkgoldenrod;
+}
+
+.boxonstorage {
+    background-color: rgb(43, 5, 5);
+}

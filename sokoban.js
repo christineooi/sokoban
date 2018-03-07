@@ -10,13 +10,18 @@ const map = [
     "WWWWWWWW"
   ];
 
-    
+const mapArray = [];
 
-console.log("map: \n" + JSON.stringify(map));
+for (let i = 0; i < map.length; i++) {
+    mapArray.push([]);
+    mapArray[i].push(...map[i].split(""));
+}    
+
+console.log("mapArray: \n" + JSON.stringify(mapArray));
 
 
-maxCols = map[0].length;
-maxRows = map.length;
+maxCols = mapArray[0].length;
+maxRows = mapArray.length;
 
 cellSize = 40;
 
@@ -37,34 +42,24 @@ function setMessage(msg){
     msgEl.innerHTML = msg;
 }
 
-function isGameOver (){
+function isGameOver(){
     if (boxOnStorageCount === numOfBoxes){
         gameOver = true;
+        setMessage("You have finished the game!");
     }
     return gameOver;
 }
 
-function move(item, direction){
-    var itemEl = document.getElementById(item);
-    if (direction === "right") {
-        startLeft = startLeft + cellSize;
-        itemEl.style.left = startLeft + "px";
-    } else if (direction === "up") {
-        startTop = startTop - cellSize;
-        itemEl.style.top = startTop + "px";
-    } else if (direction === "down") {
-        startTop = startTop + cellSize;
-        itemEl.style.top = startTop + "px";
-    } else if (direction === "left") {
-        startLeft = startLeft - cellSize;
-        itemEl.style.left = startLeft + "px";
-    }
+function updateMapArray(oldpos, ovalue, newpos, nvalue){
+    mapArray[oldpos.y][oldpos.x] = ovalue;
+    mapArray[newpos.y][newpos.x] = nvalue;
+console.log("mapArray: \n" + JSON.stringify(mapArray));
 }
 
-function updateMap(){
-
+function updatePlayerPos(newpos){
+    playXPos = newpos.x;
+    playYPos = newpos.y;
 }
-
 
 function getNextPosition (arr, direction, num) {
     var nextPos;
@@ -106,8 +101,24 @@ function getDirection (key) {
   return direction;
 }
 
+function movePlayer(direction){
+    var playerEl = document.getElementById("player");
+    if (direction  === "right"){
+        startLeft = startLeft + cellSize;
+        playerEl.style.left = startLeft + "px";
+    } else if (direction === "up"){
+        startTop = startTop - cellSize;
+        playerEl.style.top = startTop + "px";
+    } else if (direction === "down"){
+        startTop = startTop + cellSize;
+        playerEl.style.top = startTop + "px";
+    } else if (direction === "left"){
+        startLeft = startLeft - cellSize;
+        playerEl.style.left = startLeft + "px";
+    }
+}
+
 document.addEventListener('keydown', (event) => {
-    // setMessage("");
     const keyName = event.key;
     console.log('keydown event\n\n' + 'key: ' + keyName);
     var direction = getDirection(keyName);
@@ -119,16 +130,95 @@ console.log("currentPosition.y: " + currentPosition.y);
 console.log("currentPosition.x: " + currentPosition.x);
     var positionOneOver;
     var positionTwoOver;
+    var playerValue = mapArray[currentPosition.y][currentPosition.x];
+
     // If game is not over
-    if (!gameOver) {
+    if (!isGameOver()) {
         positionOneOver = getNextPosition(currentPosition,direction,1);
         positionTwoOver = getNextPosition(currentPosition,direction,2);
-console.log("Player current position: " + map[currentPosition.y][currentPosition.x]);    
-console.log("One position over from player: " + map[positionOneOver.y][positionOneOver.x]);  
-console.log("Two positions over from player: " + map[positionTwoOver.y][positionTwoOver.x]);   
+console.log("Player current value: " + mapArray[currentPosition.y][currentPosition.x]);    
+console.log("Value one position over from player: " + mapArray[positionOneOver.y][positionOneOver.x]);  
+console.log("Value two positions over from player: " + mapArray[positionTwoOver.y][positionTwoOver.x]);   
 
-        if (map[positionOneOver.y][positionOneOver.x] === " " || map[positionOneOver.y][positionOneOver.x]  === "O"){
-            console.log("Either floor or storage next to player");
+        if (mapArray[positionOneOver.y][positionOneOver.x] === " "){
+            if (playerValue === "S") {
+                updateMapArray(currentPosition," ",positionOneOver,"S");
+            } else if (playerValue === "V"){
+                updateMapArray(currentPosition,"O",positionOneOver,"S");
+            }
+            updatePlayerPos(positionOneOver);
+            createMap();
+            movePlayer(direction);
+        }
+        // Player over storage is represented by "V" in mapArray
+        if (mapArray[positionOneOver.y][positionOneOver.x] === "O") {
+console.log("heading over to storage");
+            if (playerValue === "S") {
+console.log("about to update mapArray so player current value is V");          
+                updateMapArray(currentPosition," ",positionOneOver,"V");
+            } else if (playerValue === "V"){
+                updateMapArray(currentPosition,"O",positionOneOver,"V");
+            }
+            updatePlayerPos(positionOneOver);
+            createMap();
+            movePlayer(direction);
+        }
+        if (mapArray[positionOneOver.y][positionOneOver.x] === "B") {
+            if (mapArray[positionTwoOver.y][positionTwoOver.x] === " ") {
+                // Move box over
+                updateMapArray(positionOneOver," ",positionTwoOver,"B");
+                // Move player
+                if (playerValue === "S"){             
+                    updateMapArray(currentPosition," ",positionOneOver,"S");
+                } else if (playerValue === "V"){
+                    updateMapArray(currentPosition,"O",positionOneOver,"S");
+                }     
+                updatePlayerPos(positionOneOver);
+                createMap();  
+                movePlayer(direction);
+            } else if (mapArray[positionTwoOver.y][positionTwoOver.x] === "O") {
+                // Move box over
+                updateMapArray(positionOneOver," ",positionTwoOver,"X");
+                boxOnStorageCount++;
+                // Move player
+                if (playerValue === "S"){  
+                    updateMapArray(currentPosition," ",positionOneOver,"S");
+                } else if (playerValue === "V"){
+                    updateMapArray(currentPosition,"O",positionOneOver,"S");
+                }     
+                updatePlayerPos(positionOneOver);
+                createMap(); 
+                movePlayer(direction);
+            }
+        }
+        if (mapArray[positionOneOver.y][positionOneOver.x] === "X"){
+            if (mapArray[positionTwoOver.y][positionTwoOver.x] === " ") {
+                // Move box over
+                updateMapArray(positionOneOver,"O",positionTwoOver,"B");
+                boxOnStorageCount--;
+                // Move player
+                if (playerValue === "S"){             
+                    updateMapArray(currentPosition," ",positionOneOver,"V");
+                } else if (playerValue === "V"){
+                    updateMapArray(currentPosition,"O",positionOneOver,"V");
+                }     
+                updatePlayerPos(positionOneOver);
+                createMap();  
+                movePlayer(direction);
+            } else if (mapArray[positionTwoOver.y][positionTwoOver.x] === "O") {
+                // Move box over
+                updateMapArray(positionOneOver,"O",positionTwoOver,"X");
+                boxOnStorageCount++;
+                // Move player
+                if (playerValue === "S"){  
+                    updateMapArray(currentPosition," ",positionOneOver,"V");
+                } else if (playerValue === "V"){
+                    updateMapArray(currentPosition,"O",positionOneOver,"V");
+                }     
+                updatePlayerPos(positionOneOver);
+                createMap(); 
+                movePlayer(direction);
+            }
         }
 
     } // end !gameOver
@@ -138,7 +228,7 @@ console.log("Two positions over from player: " + map[positionTwoOver.y][position
 function setPlayerStartPos (){ 
     for (let i=0; i<maxRows; i++){
         for (let j=0; j<maxCols; j++){
-            if (map[i][j] === "S"){
+            if (mapArray[i][j] === "S"){
                 playYPos = i;
                 playXPos = j;
             }
@@ -165,30 +255,34 @@ function createDiv(type,num) {
     document.getElementById("container").appendChild(divEl);       
 }
 
-function createMaze() {
-    var divEl;
+function createMap() {
+    var parentEl = document.getElementById("container");
 
+    while ( parentEl.firstChild ) {
+        parentEl.removeChild( parentEl.firstChild );
+    }
+    createPlayer();
 //map[i].substr(j, 1) === " "
     for (let i = 0; i < maxRows; i++) {
         for (let j = 0; j < maxCols; j++) {
-            if (map[i][j] === "W") {
+            if (mapArray[i][j] === "W") {
                 createDiv("wall");
             }
-            if (map[i][j] === " ") {
+            if (mapArray[i][j] === " ") {
                 createDiv("floor");
             }
-            if (map[i][j] === "S") {
+            if (mapArray[i][j] === "S" || mapArray[i][j] === "V") {
                 createDiv("start");
             }
-            if (map[i][j] === "O") {
+            if (mapArray[i][j] === "O") {
                 createDiv("storage");
             }
-            if (map[i][j] === "B") {
+            if (mapArray[i][j] === "B") {
                 boxCount++;
                 numOfBoxes++;
                 createDiv("box",boxCount);
             }
-            if (map[i][j] === "X") {
+            if (mapArray[i][j] === "X") {
                 boxOnStorageCount++;
                 numOfBoxes++;
                 createDiv("boxonstorage",boxOnStorageCount);
@@ -200,7 +294,6 @@ function createMaze() {
 }
 
 window.onload = function() {
-    createMaze();
-    createPlayer();
+    createMap();
     setPlayerStartPos();
 };

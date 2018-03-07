@@ -45,7 +45,6 @@ function setMessage(msg){
 function isGameOver(){
     if (boxOnStorageCount === numOfBoxes){
         gameOver = true;
-        setMessage("You have finished the game!");
     }
     return gameOver;
 }
@@ -126,8 +125,7 @@ document.addEventListener('keydown', (event) => {
         x: playXPos,
         y: playYPos
     }
-console.log("currentPosition.y: " + currentPosition.y);
-console.log("currentPosition.x: " + currentPosition.x);
+
     var positionOneOver;
     var positionTwoOver;
     var playerValue = mapArray[currentPosition.y][currentPosition.x];
@@ -135,11 +133,9 @@ console.log("currentPosition.x: " + currentPosition.x);
     // If game is not over
     if (!isGameOver()) {
         positionOneOver = getNextPosition(currentPosition,direction,1);
-        positionTwoOver = getNextPosition(currentPosition,direction,2);
-console.log("Player current value: " + mapArray[currentPosition.y][currentPosition.x]);    
-console.log("Value one position over from player: " + mapArray[positionOneOver.y][positionOneOver.x]);  
-console.log("Value two positions over from player: " + mapArray[positionTwoOver.y][positionTwoOver.x]);   
-
+        positionTwoOver = getNextPosition(currentPosition,direction,2); 
+console.log("numOfBoxes: " + numOfBoxes);
+console.log("boxOnStorageCount: " + boxOnStorageCount);
         if (mapArray[positionOneOver.y][positionOneOver.x] === " "){
             if (playerValue === "S") {
                 updateMapArray(currentPosition," ",positionOneOver,"S");
@@ -152,9 +148,7 @@ console.log("Value two positions over from player: " + mapArray[positionTwoOver.
         }
         // Player over storage is represented by "V" in mapArray
         if (mapArray[positionOneOver.y][positionOneOver.x] === "O") {
-console.log("heading over to storage");
-            if (playerValue === "S") {
-console.log("about to update mapArray so player current value is V");          
+            if (playerValue === "S") {         
                 updateMapArray(currentPosition," ",positionOneOver,"V");
             } else if (playerValue === "V"){
                 updateMapArray(currentPosition,"O",positionOneOver,"V");
@@ -220,6 +214,9 @@ console.log("about to update mapArray so player current value is V");
                 movePlayer(direction);
             }
         }
+        if (isGameOver()){
+            setMessage("You have finished the game!");
+        }
 
     } // end !gameOver
 
@@ -231,6 +228,11 @@ function setPlayerStartPos (){
             if (mapArray[i][j] === "S"){
                 playYPos = i;
                 playXPos = j;
+            } else if (mapArray[i][j] === "X"){
+                boxOnStorageCount++;
+                numOfBoxes++;
+            } else if (mapArray[i][j] === "B"){
+                numOfBoxes++;
             }
             
         }
@@ -246,12 +248,9 @@ function createPlayer(){
     document.getElementById("container").appendChild(divEl);  
 }
 
-function createDiv(type,num) {
+function createDiv(type) {
     divEl = document.createElement("div");
     divEl.className = "cell " + type;
-    if (type === "box" || type === "boxonstorage") {
-        divEl.setAttribute("id", type + num);
-    }
     document.getElementById("container").appendChild(divEl);       
 }
 
@@ -262,7 +261,6 @@ function createMap() {
         parentEl.removeChild( parentEl.firstChild );
     }
     createPlayer();
-//map[i].substr(j, 1) === " "
     for (let i = 0; i < maxRows; i++) {
         for (let j = 0; j < maxCols; j++) {
             if (mapArray[i][j] === "W") {
@@ -278,14 +276,10 @@ function createMap() {
                 createDiv("storage");
             }
             if (mapArray[i][j] === "B") {
-                boxCount++;
-                numOfBoxes++;
-                createDiv("box",boxCount);
+                createDiv("box");
             }
             if (mapArray[i][j] === "X") {
-                boxOnStorageCount++;
-                numOfBoxes++;
-                createDiv("boxonstorage",boxOnStorageCount);
+                createDiv("boxonstorage");
             }
         
         }

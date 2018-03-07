@@ -22,7 +22,7 @@ header {
 }
 
 .player {
-    background-image: url("girl.png");
+    background-image: url("wondergirl.png");
     background-repeat: no-repeat;
     background-position: center;
     position: absolute;
@@ -31,7 +31,6 @@ header {
 .cell {
     width: 40px;
     height: 40px;
-    /* border: 1px solid black; */
 }
 
 .floor {
@@ -39,21 +38,22 @@ header {
 }
 
 .wall {
-    background-color: olive;
+    background-image: url("wall.jpg");
 }
 
 .storage {
-    /* width:15px;
-    height:15px; */
+    width:20px;
+    height:20px;
+    margin: 10px;
     border-radius:15px;
     background-color: pink;
     display: block;
 }
 
 .box {
-    background-color: darkgoldenrod;
+    background-image: url("crate.png");
 }
 
 .boxonstorage {
-    background-color: rgb(43, 5, 5);
+    background-image: url("cratedark.png");
 }

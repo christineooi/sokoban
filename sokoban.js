@@ -17,8 +17,7 @@ for (let i = 0; i < map.length; i++) {
     mapArray[i].push(...map[i].split(""));
 }    
 
-console.log("mapArray: \n" + JSON.stringify(mapArray));
-
+// console.log("mapArray: \n" + JSON.stringify(mapArray));
 
 maxCols = mapArray[0].length;
 maxRows = mapArray.length;
@@ -31,7 +30,6 @@ var startLeft=cellSize*2;
 var playYPos;
 var playXPos;
 
-var boxCount = 0;
 var boxOnStorageCount = 0;
 var numOfBoxes = 0;
 
@@ -42,6 +40,8 @@ function setMessage(msg){
     msgEl.innerHTML = msg;
 }
 
+// If the number of boxes on storage equals the number of boxes, then set 
+// gameOver flag to true
 function isGameOver(){
     if (boxOnStorageCount === numOfBoxes){
         gameOver = true;
@@ -49,10 +49,10 @@ function isGameOver(){
     return gameOver;
 }
 
+// Takes current position array, the value to set it to, the new position array and the value to set that to
 function updateMapArray(oldpos, ovalue, newpos, nvalue){
     mapArray[oldpos.y][oldpos.x] = ovalue;
     mapArray[newpos.y][newpos.x] = nvalue;
-console.log("mapArray: \n" + JSON.stringify(mapArray));
 }
 
 function updatePlayerPos(newpos){
@@ -134,8 +134,9 @@ document.addEventListener('keydown', (event) => {
     if (!isGameOver()) {
         positionOneOver = getNextPosition(currentPosition,direction,1);
         positionTwoOver = getNextPosition(currentPosition,direction,2); 
-console.log("numOfBoxes: " + numOfBoxes);
-console.log("boxOnStorageCount: " + boxOnStorageCount);
+        // If floor is next to player, player can move so update mapArray with new position values, 
+        // update player current position and recreate the mapArray based on the new position values, 
+        // and move the player
         if (mapArray[positionOneOver.y][positionOneOver.x] === " "){
             if (playerValue === "S") {
                 updateMapArray(currentPosition," ",positionOneOver,"S");
@@ -146,7 +147,9 @@ console.log("boxOnStorageCount: " + boxOnStorageCount);
             createMap();
             movePlayer(direction);
         }
-        // Player over storage is represented by "V" in mapArray
+        // If storage is next to player, player can move so update mapArray, update player current position,
+        // recreate the interface based on mapArray and move the player
+        // Note: Player over storage is represented by "V" in mapArray
         if (mapArray[positionOneOver.y][positionOneOver.x] === "O") {
             if (playerValue === "S") {         
                 updateMapArray(currentPosition," ",positionOneOver,"V");
@@ -157,6 +160,7 @@ console.log("boxOnStorageCount: " + boxOnStorageCount);
             createMap();
             movePlayer(direction);
         }
+        // If next position is a box, and two positions over is either the floor or storage
         if (mapArray[positionOneOver.y][positionOneOver.x] === "B") {
             if (mapArray[positionTwoOver.y][positionTwoOver.x] === " ") {
                 // Move box over
@@ -185,6 +189,7 @@ console.log("boxOnStorageCount: " + boxOnStorageCount);
                 movePlayer(direction);
             }
         }
+        // If next position over is box-on-storage and two positions over is the floor or storage
         if (mapArray[positionOneOver.y][positionOneOver.x] === "X"){
             if (mapArray[positionTwoOver.y][positionTwoOver.x] === " ") {
                 // Move box over
@@ -222,6 +227,7 @@ console.log("boxOnStorageCount: " + boxOnStorageCount);
 
 });
 
+// Set player starting position and initial counts
 function setPlayerStartPos (){ 
     for (let i=0; i<maxRows; i++){
         for (let j=0; j<maxCols; j++){
@@ -254,9 +260,10 @@ function createDiv(type) {
     document.getElementById("container").appendChild(divEl);       
 }
 
+// Called onload of page and everytime the arrow buttons are pressed
 function createMap() {
+    // Remove any child elements as they will be re-created below 
     var parentEl = document.getElementById("container");
-
     while ( parentEl.firstChild ) {
         parentEl.removeChild( parentEl.firstChild );
     }

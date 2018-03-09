@@ -11,11 +11,10 @@ const map = [
   ];
 
 const mapArray = [];
-
-for (let i = 0; i < map.length; i++) {
-    mapArray.push([]);
-    mapArray[i].push(...map[i].split(""));
-}    
+  
+for (let i = 0; i < map.length; i++){
+    mapArray.push(map[i].split(""));
+}
 
 // console.log("mapArray: \n" + JSON.stringify(mapArray));
 
@@ -123,6 +122,14 @@ function updateTasks(nextPosArray, direction){
     movePlayer(direction);
 }
 
+function handlePlayerValueInMapArray(playerVal, currPosArr, nextPosArr, nextPosValue){
+    if (playerVal === "S") {
+        updateMapArray(currPosArr," ",nextPosArr,nextPosValue);
+    } else if (playerVal === "V"){
+        updateMapArray(currPosArr,"O",nextPosArr,nextPosValue);
+    }
+}
+
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
     console.log('keydown event\n\n' + 'key: ' + keyName);
@@ -144,22 +151,14 @@ document.addEventListener('keydown', (event) => {
         // update player current position and recreate the mapArray based on the new position values, 
         // and move the player
         if (valueOfPositionOneOver === " "){
-            if (playerValue === "S") {
-                updateMapArray(currentPosition," ",positionOneOver,"S");
-            } else if (playerValue === "V"){
-                updateMapArray(currentPosition,"O",positionOneOver,"S");
-            }
+            handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "S");
             updateTasks(positionOneOver, direction);
         }
         // If storage is next to player, player can move so update mapArray, update player current position,
         // recreate the interface based on mapArray and move the player
         // Note: Player over storage is represented by "V" in mapArray
         if (valueOfPositionOneOver === "O") {
-            if (playerValue === "S") {         
-                updateMapArray(currentPosition," ",positionOneOver,"V");
-            } else if (playerValue === "V"){
-                updateMapArray(currentPosition,"O",positionOneOver,"V");
-            }
+            handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "V");
             updateTasks(positionOneOver, direction);
         }
         // If next position is a box, and two positions over is either the floor or storage
@@ -168,22 +167,14 @@ document.addEventListener('keydown', (event) => {
                 // Move box over
                 updateMapArray(positionOneOver," ",positionTwoOver,"B");
                 // Move player
-                if (playerValue === "S"){             
-                    updateMapArray(currentPosition," ",positionOneOver,"S");
-                } else if (playerValue === "V"){
-                    updateMapArray(currentPosition,"O",positionOneOver,"S");
-                }     
+                handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "S");   
                 updateTasks(positionOneOver, direction);
             } else if (valueOfPositionTwoOver === "O") {
                 // Move box over
                 updateMapArray(positionOneOver," ",positionTwoOver,"X");
                 boxOnStorageCount++;
                 // Move player
-                if (playerValue === "S"){  
-                    updateMapArray(currentPosition," ",positionOneOver,"S");
-                } else if (playerValue === "V"){
-                    updateMapArray(currentPosition,"O",positionOneOver,"S");
-                }     
+                handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "S");     
                 updateTasks(positionOneOver, direction);
             }
         }
@@ -192,24 +183,18 @@ document.addEventListener('keydown', (event) => {
             if (valueOfPositionTwoOver === " ") {
                 // Move box over
                 updateMapArray(positionOneOver,"O",positionTwoOver,"B");
+                // Decrease box-on-storage count
                 boxOnStorageCount--;
                 // Move player
-                if (playerValue === "S"){             
-                    updateMapArray(currentPosition," ",positionOneOver,"V");
-                } else if (playerValue === "V"){
-                    updateMapArray(currentPosition,"O",positionOneOver,"V");
-                }     
+                handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "V");     
                 updateTasks(positionOneOver, direction);
             } else if (valueOfPositionTwoOver === "O") {
                 // Move box over
                 updateMapArray(positionOneOver,"O",positionTwoOver,"X");
+                // Increase box-on-storage count
                 boxOnStorageCount++;
                 // Move player
-                if (playerValue === "S"){  
-                    updateMapArray(currentPosition," ",positionOneOver,"V");
-                } else if (playerValue === "V"){
-                    updateMapArray(currentPosition,"O",positionOneOver,"V");
-                }     
+                handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "V");    
                 updateTasks(positionOneOver, direction);
             }
         }

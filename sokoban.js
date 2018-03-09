@@ -23,16 +23,20 @@ maxRows = mapArray.length;
 
 cellSize = 40;
 
-var startTop=cellSize*2;
-var startLeft=cellSize*2;
-
 var playYPos;
 var playXPos;
+var startTop;
+var startLeft;
 
 var boxOnStorageCount = 0;
 var numOfBoxes = 0;
 
 var gameOver = false;
+
+function setWidth(){
+    var containerEl = document.getElementById("container");
+    containerEl.style.width = cellSize*maxCols + "px";
+}
 
 function setMessage(msg){
     var msgEl = document.getElementById("message"); 
@@ -132,7 +136,7 @@ function handlePlayerValueInMapArray(playerVal, currPosArr, nextPosArr, nextPosV
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
-    console.log('keydown event\n\n' + 'key: ' + keyName);
+    // console.log('keydown event\n\n' + 'key: ' + keyName);
     var direction = getDirection(keyName);
     var currentPosition =  {
         x: playXPos,
@@ -191,8 +195,6 @@ document.addEventListener('keydown', (event) => {
             } else if (valueOfPositionTwoOver === "O") {
                 // Move box over
                 updateMapArray(positionOneOver,"O",positionTwoOver,"X");
-                // Increase box-on-storage count
-                boxOnStorageCount++;
                 // Move player
                 handlePlayerValueInMapArray(playerValue, currentPosition, positionOneOver, "V");    
                 updateTasks(positionOneOver, direction);
@@ -213,6 +215,8 @@ function setPlayerStartPos (){
             if (mapArray[i][j] === "S"){
                 playYPos = i;
                 playXPos = j;
+                startTop=cellSize*playYPos; 
+                startLeft=cellSize*(playXPos);     
             } else if (mapArray[i][j] === "X"){
                 boxOnStorageCount++;
                 numOfBoxes++;
@@ -274,6 +278,7 @@ function createMap() {
 }
 
 window.onload = function() {
-    createMap();
+    setWidth();
     setPlayerStartPos();
+    createMap();  
 };

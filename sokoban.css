@@ -17,7 +17,8 @@ header {
 #container {
     display: flex;
     flex-flow: row wrap;
-    width: 340px;
+    /* width: 340px; */
+    /* width: 760px; */
     margin:0 auto;
     text-align: center;
     position: relative;
